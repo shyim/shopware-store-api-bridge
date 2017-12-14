@@ -1,0 +1,5 @@
+.idea
+storage/*
+logs/*
+debug
+vendor

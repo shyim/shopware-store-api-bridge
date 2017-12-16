@@ -35,7 +35,7 @@ class StoreListingService
 
         return [
             'data' => $plugins,
-            'total' => count($plugins)
+            'total' => $this->getTotalCount($filters)
         ];
     }
 
@@ -46,6 +46,32 @@ class StoreListingService
      * @return array
      */
     private function getPluginsFromDatabase(array $filters, int $offset, int $limit)
+    {
+        return $this->getQueryBuilder($filters, $offset, $limit)->execute()->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * @param array $filters
+     * @return bool|string
+     */
+    private function getTotalCount(array $filters)
+    {
+        $qb = $this->getQueryBuilder($filters, 0, 0);
+        $qb->resetQueryPart('select')
+            ->setFirstResult(null)
+            ->setMaxResults(null);
+        $qb->addSelect(['COUNT(*)']);
+
+        return $qb->execute()->fetchColumn();
+    }
+
+    /**
+     * @param array $filters
+     * @param int $offset
+     * @param int $limit
+     * @return \Doctrine\DBAL\Query\QueryBuilder
+     */
+    private function getQueryBuilder(array $filters, int $offset, int $limit)
     {
         $qb = $this->connection->createQueryBuilder();
         $qb->from('plugins', 'plugins')
@@ -58,9 +84,13 @@ class StoreListingService
                 ->setParameter('type', PluginStore::CUSTOM_CATEGORIES[$filters['categoryId']]['type']);
         }
 
-        return $qb->execute()->fetchAll(\PDO::FETCH_ASSOC);
+        return $qb;
     }
 
+    /**
+     * @param array $plugin
+     * @return array
+     */
     private function convertPluginToStorePlugin(array $plugin)
     {
         return [

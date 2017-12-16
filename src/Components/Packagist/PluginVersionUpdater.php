@@ -57,8 +57,8 @@ class PluginVersionUpdater
                 $zipName = $plugin->getInstallName() . '-' . $name . '.zip ';
                 system('mkdir -p ' . $tmpDirVersionPlugin . ' && cd ' . $tmpDirVersionPlugin . ' && git clone --branch ' . $name . ' '  . $version['source']['url'] . ' ' . $plugin->getInstallName());
 
-                // plugin has custom requires-
-                if (count($version['require']) > 1) {
+                // plugin has custom requires
+                if (isset($version['require']) && count($version['require']) > 1) {
                     system('cd ' . $tmpDirVersionPlugin . '/' . $plugin->getInstallName() . ' && composer install -o --no-dev');
                 }
 

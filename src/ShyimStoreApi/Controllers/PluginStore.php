@@ -104,6 +104,11 @@ class PluginStore implements ServiceProviderInterface
             $response = $this->app->proxy($request);
         }
 
+        if (isset($filter['search'])) {
+            $brigeData = $this->app['store_listing']->getListing($filter, $request->query->get('offset', 0), $request->query->get('limit', 20));
+            $response['data'] = Helper::mergeArray($response['data'], $brigeData['data'], 'name');
+        }
+
         return new JsonResponse($response);
     }
 

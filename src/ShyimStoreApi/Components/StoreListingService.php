@@ -113,6 +113,11 @@ class StoreListingService
                 ->setParameter('names', $filters['plugins'], Connection::PARAM_STR_ARRAY);
         }
 
+        if (isset($filters['search'])) {
+            $qb->andWhere('plugins.name LIKE :search OR plugins.description LIKE :search')
+                ->setParameter('search', '%' . $filters['search'] . '%');
+        }
+
         return $qb;
     }
 
@@ -172,7 +177,7 @@ class StoreListingService
             'ratingAverage' => 0,
             'label' => $plugin['name'],
             'description' => $plugin['description'],
-            'installationManual' => 'currentNotPossible',
+            'installationManual' => null,
             'version' => $plugin['latestVersion'],
             'changelog' => [],
             'addons' => [

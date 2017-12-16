@@ -1,5 +1,7 @@
 # Bridge between Shopware Store API and our Shopware Shop
 
+## This project is experimental
+
 ## What is the goal of this project?
 
 Install and Update composer packages in easiest way directly integrated in the default Plugin Manager, without custom plugins installed on Shop.
@@ -32,3 +34,5 @@ The shopware store api url is changeable in config.php
 * Run packagist sync command "php bin/console.php packagist:sync"
 
 # Screenshots
+![Search](https://i.imgur.com/JQ7eWmX.png)
+![Listing](https://i.imgur.com/wuJ6Fnu.png)

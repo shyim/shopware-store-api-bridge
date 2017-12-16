@@ -19,12 +19,13 @@ The shopware store api curl is changeable in config.php
 ## Installation
 
 ### Requirements
-* PHP 7.0 or higher
+* PHP 7.1 or higher
 * MySQL or MariaDB
 * system function allowed
 * Unix system installed with zip and git
 
 ### Configuration
 
-* Create a new mysql database and import the install.sql and adjust the settings in src/ShyimStoreApi/Application.php
+* Create a new mysql database and import the install.sql
+* Copy .env_default to .env and adjust the settings
 * Run packagist sync command "php bin/console.php packagist:sync"

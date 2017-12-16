@@ -4,6 +4,7 @@ namespace ShyimStoreApi\Controllers;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use ShyimStoreApi\Components\Helper;
 use ShyimStoreApi\Components\StoreListingService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,6 +48,7 @@ class PluginStore implements ServiceProviderInterface
         $this->app = $pimple;
         $this->app->get('/pluginStore/categories', [$this, 'handleCustomCategories']);
         $this->app->get('/pluginStore/plugins', [$this, 'handleCustomCategoryListing']);
+        $this->app->get('/pluginStore/updateablePlugins', [$this, 'handlePluginUpdates']);
         $this->app->get('/pluginFiles/{name}/data', [$this, 'handleCustomPluginDownload']);
     }
 
@@ -127,5 +129,30 @@ class PluginStore implements ServiceProviderInterface
         } else {
             return new JsonResponse($this->app->proxy($request));
         }
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function handlePluginUpdates(Request $request)
+    {
+        $response = $this->app->proxy($request);
+        $updates = $this->app['store_listing']->getPluginUpdates($request->query->get('plugins'));
+
+        if (!isset($response['data'])) {
+            $response['data'] = [];
+        }
+
+        // merge store updates and bridge updates, and prefer store updates
+        $response['data'] = Helper::mergeArray($response['data'], $updates, 'name');
+
+        if (count($updates) >= 1) {
+            // Remove shopware api error code, if the bridge has updates
+            unset($response['code']);
+            $response['success'] = true;
+        }
+
+        return new JsonResponse($response);
     }
 }

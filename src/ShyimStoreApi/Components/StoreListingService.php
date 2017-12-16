@@ -25,6 +25,12 @@ class StoreListingService
         $this->connection = $connection;
     }
 
+    /**
+     * @param array $filters
+     * @param int $offset
+     * @param int $limit
+     * @return array
+     */
     public function getListing(array $filters, int $offset, int $limit)
     {
         $plugins = $this->getPluginsFromDatabase($filters, $offset, $limit);
@@ -37,6 +43,24 @@ class StoreListingService
             'data' => $plugins,
             'total' => $this->getTotalCount($filters)
         ];
+    }
+
+    /**
+     * @param array $plugins
+     * @return array
+     */
+    public function getPluginUpdates(array $plugins)
+    {
+        $pluginsCustom = $this->getPluginsFromDatabase(['plugins' => array_keys($plugins)], 0, 20000);
+        $updateNeededPlugins = [];
+
+        foreach ($pluginsCustom as $plugin) {
+            if (isset($plugins[$plugin['name']]) && version_compare($plugin['latestVersion'], $plugins[$plugin['name']], '>')) {
+                $updateNeededPlugins[] = $this->convertPluginToStorePlugin($plugin);
+            }
+        }
+
+        return $updateNeededPlugins;
     }
 
     /**
@@ -79,9 +103,14 @@ class StoreListingService
             ->setFirstResult($offset)
             ->setMaxResults($limit);
 
-        if (isset(PluginStore::CUSTOM_CATEGORIES[$filters['categoryId']])) {
+        if (isset($filters['categoryId']) && isset(PluginStore::CUSTOM_CATEGORIES[$filters['categoryId']])) {
             $qb->andWhere('plugins.type = :type')
                 ->setParameter('type', PluginStore::CUSTOM_CATEGORIES[$filters['categoryId']]['type']);
+        }
+
+        if (isset($filters['plugins'])) {
+            $qb->andWhere('plugins.name IN(:names)')
+                ->setParameter('names', $filters['plugins'], Connection::PARAM_STR_ARRAY);
         }
 
         return $qb;

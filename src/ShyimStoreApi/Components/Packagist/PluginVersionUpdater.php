@@ -47,15 +47,21 @@ class PluginVersionUpdater
 
             if (strpos($name, 'dev') === false && empty($hasVersion)) {
                 $tmpDirVersion = $tmpDir . '/' . uniqid();
-                $zipName = $plugin->getInstallName() . '-' . $name . '.zip ';
-                system('mkdir  ' . $tmpDirVersion . ' && cd ' . $tmpDirVersion . ' && git clone --branch ' . $name . ' '  . $version['source']['url'] . ' ' . $plugin->getInstallName());
+                $tmpDirVersionPlugin = $tmpDirVersion;
 
-                // plugin has custom requires
-                if (count($version['require']) > 1) {
-                    system('cd ' . $tmpDirVersion . '/' . $plugin->getInstallName() . ' && composer install -o --no-dev');
+                if ($plugin->getType() !== 'shopware-plugin') {
+                    $tmpDirVersionPlugin .= '/' . $plugin->getNamespace();
                 }
 
-                system('cd ' . $tmpDirVersion . ' && zip -r ' . $zipName . ' ' . $plugin->getInstallName() . ' -x *.git* && mv ' . $zipName . ' ' . $pluginStorageFolder);
+                $zipName = $plugin->getInstallName() . '-' . $name . '.zip ';
+                system('mkdir -p ' . $tmpDirVersionPlugin . ' && cd ' . $tmpDirVersionPlugin . ' && git clone --branch ' . $name . ' '  . $version['source']['url'] . ' ' . $plugin->getInstallName());
+
+                // plugin has custom requires-
+                if (count($version['require']) > 1) {
+                    system('cd ' . $tmpDirVersionPlugin . '/' . $plugin->getInstallName() . ' && composer install -o --no-dev');
+                }
+
+                system('cd ' . $tmpDirVersion . ' && zip -r ' . $zipName . ' * -x *.git* && mv ' . $zipName . ' ' . $pluginStorageFolder);
 
                 $this->connection->insert('plugins_versions', [
                     'pluginID' => $plugin->getId(),

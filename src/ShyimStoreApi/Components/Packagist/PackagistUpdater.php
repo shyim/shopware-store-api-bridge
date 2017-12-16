@@ -56,12 +56,10 @@ class PackagistUpdater
 
     public function sync()
     {
-        global $app;
         $plugins = [];
 
         foreach ($this->shopwarePluginTypes as $shopwarePluginType) {
             $this->fetchPluginsByComposerType($shopwarePluginType, $plugins);
-            break; // debug faster
         }
 
         /** @var Plugin $plugin */
@@ -104,6 +102,7 @@ class PackagistUpdater
         // get addional package info
         foreach ($body['packageNames'] as &$composerPackage) {
             if ($this->isBlacklistedPackage($composerPackage)) {
+                echo sprintf('Package "%s" is blacklisted. Skipping!' . "\n", $composerPackage);
                 continue;
             }
             $composerPackageBody = $this->request('https://packagist.org/packages/' . $composerPackage . '.json');
@@ -111,10 +110,12 @@ class PackagistUpdater
             $latestVersion = $this->getLatestVersion($composerPackageBody['versions']);
 
             if ($latestVersion === null) {
+                echo sprintf('Package "%s" has no releases. Skipping!' . "\n", $composerPackage);
                 continue;
             }
             // Missing installer-name in composer.json
             if (empty($latestVersion['extra']['installer-name'])) {
+                echo sprintf('Package "%s" has no installer name. Skipping!' . "\n", $composerPackage);
                 continue;
             }
 

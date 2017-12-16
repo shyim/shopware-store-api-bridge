@@ -369,6 +369,26 @@ class Plugin implements JsonSerializable
     }
 
     /**
+     * Returns plugin namespace (Frontend|Core|Backend)
+     * @throws \Exception
+     */
+    public function getNamespace()
+    {
+       switch ($this->type) {
+           case 'shopware-plugin':
+               return null;
+           case 'shopware-backend-plugin':
+               return 'Backend';
+           case 'shopware-core-plugin':
+               return 'Core';
+           case 'shopware-frontend-plugin':
+               return 'Frontend';
+       }
+
+       throw new \Exception(sprintf(sprintf('Invalid plugin type, got "%s"', $this->type)));
+    }
+
+    /**
      * Specify data which should be serialized to JSON
      */
     public function jsonSerialize()

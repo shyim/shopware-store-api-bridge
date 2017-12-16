@@ -4,9 +4,10 @@ namespace ShyimStoreApi;
 
 use ShyimStoreApi\Components\Packagist\PackagistUpdater;
 use ShyimStoreApi\Components\Packagist\PluginVersionUpdater;
+use ShyimStoreApi\Components\StoreListingService;
+use ShyimStoreApi\Controllers\PluginStore;
 use Silex\Provider\DoctrineServiceProvider;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class Application
@@ -30,8 +31,6 @@ class Application extends \Silex\Application
         $this->setupServices();
 
         $this->error([$this, 'proxyToShopwareApi']);
-
-        $this->get('/pluginStore/categories', [$this, 'handleCustomCategories']);
     }
 
     private function setupServices()
@@ -39,7 +38,7 @@ class Application extends \Silex\Application
         $this->register(new DoctrineServiceProvider(), [
             'db.default_options' => [
                 'driver' => 'pdo_mysql',
-                'host' => '127.0.0.1',
+                'host' => 'mysql',
                 'dbname' => 'store',
                 'user' => 'root',
                 'password' => 'toor',
@@ -54,6 +53,12 @@ class Application extends \Silex\Application
         $this['packagist_sync'] = $this->factory(function($c) {
             return new PackagistUpdater($c['db'], $c['packagist_plugin_version_updater']);
         });
+
+        $this['store_listing'] = $this->factory(function($c) {
+            return new StoreListingService($c['db']);
+        });
+
+        $this->register(new PluginStore());
     }
 
     public function proxyToShopwareApi(\Exception $e, Request $request)
@@ -62,7 +67,11 @@ class Application extends \Silex\Application
         return $this->json($this->proxy($request));
     }
 
-    private function proxy(Request $request)
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function proxy(Request $request)
     {
         $curl = curl_init(self::SHOPWARE_API . $request->getRequestUri());
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $request->getMethod());
@@ -83,62 +92,8 @@ class Application extends \Silex\Application
         $response = curl_exec($curl);
         curl_close($curl);
 
+        file_put_contents('./logs/' . md5($request->getRequestUri()) . '.json', json_encode(json_decode($response, true), JSON_PRETTY_PRINT));
+
         return json_decode($response, true);
-    }
-
-    /**
-     * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     */
-    public function handleCustomCategories(Request $request)
-    {
-        $response = $this->proxy($request, true);
-
-        $response[] = [
-            'categoryId' => 1000,
-            'parentId' => null,
-            'name' => [
-                'de_DE' => 'Composer',
-                'en_GB' => 'Composer'
-            ]
-        ];
-
-        $response[] = [
-            'categoryId' => 1001,
-            'parentId' => 1000,
-            'name' => [
-                'de_DE' => '5.2 Plugins',
-                'en_GB' => '5.2 Plugins'
-            ]
-        ];
-
-        $response[] = [
-            'categoryId' => 1002,
-            'parentId' => 1000,
-            'name' => [
-                'de_DE' => 'Frontend',
-                'en_GB' => 'Frontend'
-            ]
-        ];
-
-        $response[] = [
-            'categoryId' => 1003,
-            'parentId' => 1000,
-            'name' => [
-                'de_DE' => 'Core',
-                'en_GB' => 'Core'
-            ]
-        ];
-
-        $response[] = [
-            'categoryId' => 1004,
-            'parentId' => 1000,
-            'name' => [
-                'de_DE' => 'Backend',
-                'en_GB' => 'Backend'
-            ]
-        ];
-
-        return $this->json($response);
     }
 }

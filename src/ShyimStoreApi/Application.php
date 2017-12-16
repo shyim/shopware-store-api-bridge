@@ -2,6 +2,7 @@
 
 namespace ShyimStoreApi;
 
+use Dotenv\Dotenv;
 use ShyimStoreApi\Components\Packagist\PackagistUpdater;
 use ShyimStoreApi\Components\Packagist\PluginVersionUpdater;
 use ShyimStoreApi\Components\StoreListingService;
@@ -28,6 +29,9 @@ class Application extends \Silex\Application
         $this['root_dir'] = dirname(__DIR__, 2);
         $this['storage_dir'] = $this['root_dir'] . '/storage';
 
+        $load = new Dotenv($this['root_dir']);
+        $load->load();
+
         $this->setupServices();
 
         $this->error([$this, 'proxyToShopwareApi']);
@@ -38,10 +42,10 @@ class Application extends \Silex\Application
         $this->register(new DoctrineServiceProvider(), [
             'db.default_options' => [
                 'driver' => 'pdo_mysql',
-                'host' => 'mysql',
-                'dbname' => 'store',
-                'user' => 'root',
-                'password' => 'toor',
+                'host' => getenv('DB_HOST'),
+                'dbname' => getenv('DB_DATABASE'),
+                'user' => getenv('DB_USER'),
+                'password' => getenv('DB_PASSWORD'),
                 'charset' => 'utf8mb4',
             ],
         ]);

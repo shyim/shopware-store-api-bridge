@@ -1,13 +1,13 @@
 <?php
 
-namespace ShyimStoreApi\Components;
+namespace App\Components;
 
+use App\Controller\PluginStoreController;
 use Doctrine\DBAL\Connection;
-use ShyimStoreApi\Controllers\PluginStore;
 
 /**
  * Class StoreListingService
- * @package ShyimStoreApi\Components
+ * @package App\Components
  */
 class StoreListingService
 {
@@ -103,9 +103,9 @@ class StoreListingService
             ->setFirstResult($offset)
             ->setMaxResults($limit);
 
-        if (isset($filters['categoryId']) && isset(PluginStore::CUSTOM_CATEGORIES[$filters['categoryId']])) {
+        if (isset($filters['categoryId']) && isset(PluginStoreController::CUSTOM_CATEGORIES[$filters['categoryId']])) {
             $qb->andWhere('plugins.type = :type')
-                ->setParameter('type', PluginStore::CUSTOM_CATEGORIES[$filters['categoryId']]['type']);
+                ->setParameter('type', PluginStoreController::CUSTOM_CATEGORIES[$filters['categoryId']]['type']);
         }
 
         if (isset($filters['plugins'])) {
@@ -162,7 +162,7 @@ class StoreListingService
             ],
             'priceModels' => [
                 [
-                    'id' => rand(1,9999),
+                    'id' => rand(1, 9999),
                     'bookingKey' => $plugin['name'],
                     'bookingText' => $plugin['name'],
                     'price' => null,

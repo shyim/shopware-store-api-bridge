@@ -4,3 +4,5 @@ logs/*
 debug
 vendor
 .env
+/var/cache/*
+/var/log/*

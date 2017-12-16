@@ -1,15 +1,19 @@
 <?php
 
-namespace ShyimStoreApi\Controllers;
+namespace App\Controller;
 
-use Pimple\Container;
-use Pimple\ServiceProviderInterface;
-use ShyimStoreApi\Components\Helper;
-use ShyimStoreApi\Components\StoreListingService;
+use App\Components\Helper;
+use App\Components\StoreListingService;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
-class PluginStore implements ServiceProviderInterface
+/**
+ * Class PluginStoreController
+ * @package App\Controller
+ */
+class PluginStoreController extends Controller
 {
     const CUSTOM_CATEGORIES = [
         1001 => [
@@ -31,34 +35,13 @@ class PluginStore implements ServiceProviderInterface
     ];
 
     /**
-     * @var \ShyimStoreApi\Application
-     */
-    private $app;
-
-    /**
-     * Registers services on the given container.
-     *
-     * This method should only be used to configure services and parameters.
-     * It should not get services.
-     *
-     * @param Container $pimple A container instance
-     */
-    public function register(Container $pimple)
-    {
-        $this->app = $pimple;
-        $this->app->get('/pluginStore/categories', [$this, 'handleCustomCategories']);
-        $this->app->get('/pluginStore/plugins', [$this, 'handleCustomCategoryListing']);
-        $this->app->get('/pluginStore/updateablePlugins', [$this, 'handlePluginUpdates']);
-        $this->app->get('/pluginFiles/{name}/data', [$this, 'handleCustomPluginDownload']);
-    }
-
-    /**
+     * @Route(path="/pluginStore/categories")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function handleCustomCategories(Request $request)
     {
-        $response = $this->app->proxy($request);
+        $response = Helper::proxy($request);
 
         $response[] = [
             'categoryId' => 1000,
@@ -84,6 +67,7 @@ class PluginStore implements ServiceProviderInterface
     }
 
     /**
+     * @Route(path="/pluginStore/plugins")
      * @param Request $request
      * @return JsonResponse
      */
@@ -99,13 +83,13 @@ class PluginStore implements ServiceProviderInterface
 
         // check is it a custom category, otherwise proxy it
         if (isset($filter['categoryId']) && (isset(self::CUSTOM_CATEGORIES[$filter['categoryId']]) || $filter['categoryId'] == 1000)) {
-            $response = $this->app['store_listing']->getListing($filter, $request->query->get('offset', 0), $request->query->get('limit', 20));
+            $response = $this->get(StoreListingService::class)->getListing($filter, $request->query->get('offset', 0), $request->query->get('limit', 20));
         } else {
-            $response = $this->app->proxy($request);
+            $response = Helper::proxy($request);
         }
 
         if (isset($filter['search'])) {
-            $brigeData = $this->app['store_listing']->getListing($filter, $request->query->get('offset', 0), $request->query->get('limit', 20));
+            $brigeData = $this->get(StoreListingService::class)->getListing($filter, $request->query->get('offset', 0), $request->query->get('limit', 20));
             $response['data'] = Helper::mergeArray($response['data'], $brigeData['data'], 'name');
         }
 
@@ -113,16 +97,17 @@ class PluginStore implements ServiceProviderInterface
     }
 
     /**
+     * @Route(path="/pluginFiles/{name}/data")
      * @param Request $request
      * @param string $name
      * @return JsonResponse
      */
     public function handleCustomPluginDownload(Request $request, string $name)
     {
-        if ($pluginData = $this->app['db']->fetchAssoc('SELECT * FROM plugins WHERE name = ?', [$name])) {
+        if ($pluginData = $this->get(Helper::class)->getPluginData($name)) {
             $baseUrl = ($request->isSecure() ? 'https://' : 'http://') . $request->getHttpHost();
             $path = '/storage/' . $name . '/' . $name . '-' . $pluginData['latestVersion'] . '.zip';
-            $sPath = $this->app['root_dir'] . $path;
+            $sPath = dirname($this->get('kernel')->getRootDir()) . $path;
 
             return new JsonResponse([
                 'location' => $baseUrl . $path,
@@ -132,18 +117,19 @@ class PluginStore implements ServiceProviderInterface
                 'encrypted' => false,
             ]);
         } else {
-            return new JsonResponse($this->app->proxy($request));
+            return new JsonResponse(Helper::proxy($request));
         }
     }
 
     /**
+     * @Route(path="/pluginStore/updateablePlugins")
      * @param Request $request
      * @return JsonResponse
      */
     public function handlePluginUpdates(Request $request)
     {
-        $response = $this->app->proxy($request);
-        $updates = $this->app['store_listing']->getPluginUpdates($request->query->get('plugins'));
+        $response = Helper::proxy($request);
+        $updates = $this->get(StoreListingService::class)->getPluginUpdates($request->query->get('plugins'));
 
         if (!isset($response['data'])) {
             $response['data'] = [];

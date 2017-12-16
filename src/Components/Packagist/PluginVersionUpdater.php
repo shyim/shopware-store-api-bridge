@@ -1,12 +1,12 @@
 <?php
 
-namespace ShyimStoreApi\Components\Packagist;
+namespace App\Components\Packagist;
 
 use Doctrine\DBAL\Connection;
 
 /**
  * Class PluginVersionUpdater
- * @package ShyimStoreApi\Components\Packagist
+ * @package App\Components\Packagist
  */
 class PluginVersionUpdater
 {
@@ -26,12 +26,13 @@ class PluginVersionUpdater
 
     /**
      * @param Plugin $plugin
+     * @throws \Exception
      */
     public function updateVersions(Plugin $plugin)
     {
-        global $app;
+        global $kernel;
 
-        $pluginStorageFolder = $app['storage_dir'] . '/' . $plugin->getInstallName();
+        $pluginStorageFolder = dirname($kernel->getRootDir()) . '/storage/' . $plugin->getInstallName();
 
         if (!file_exists($pluginStorageFolder)) {
             mkdir($pluginStorageFolder);

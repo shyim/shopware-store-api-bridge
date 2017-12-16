@@ -1,6 +1,6 @@
 <?php
 
-namespace ShyimStoreApi\Components\Packagist;
+namespace App\Components\Packagist;
 
 use JsonSerializable;
 
@@ -374,7 +374,7 @@ class Plugin implements JsonSerializable
      */
     public function getNamespace()
     {
-       switch ($this->type) {
+        switch ($this->type) {
            case 'shopware-plugin':
                return null;
            case 'shopware-backend-plugin':
@@ -385,7 +385,7 @@ class Plugin implements JsonSerializable
                return 'Frontend';
        }
 
-       throw new \Exception(sprintf(sprintf('Invalid plugin type, got "%s"', $this->type)));
+        throw new \Exception(sprintf(sprintf('Invalid plugin type, got "%s"', $this->type)));
     }
 
     /**

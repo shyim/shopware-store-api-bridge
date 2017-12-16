@@ -1,18 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: shyim
- * Date: 14.12.17
- * Time: 22:17
- */
 
-namespace ShyimStoreApi\Components\Packagist;
+namespace App\Components\Packagist;
+
 use Doctrine\DBAL\Connection;
-
 
 /**
  * Class PackagistUpdater
- * @package ShyimStoreApi\Components\Packagist
+ * @package App\Components\Packagist
  */
 class PackagistUpdater
 {

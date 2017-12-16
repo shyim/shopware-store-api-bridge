@@ -30,16 +30,16 @@ I will create for that a Pull Request, to make it configureable in config.php
 ## Installation
 
 ### Requirements 
-* PHP 7.1 or higher
+* PHP 7.1.3 or higher
 * MySQL or MariaDB
 * system function allowed
 * Unix system installed with zip and git
 
 ### Configuration
 
-* Create a new mysql database and import the install.sql
 * Copy .env_default to .env and adjust the settings
-* Run packagist sync command "php bin/console.php packagist:sync"
+* Run migrations "php bin/console doctrine:migrations:migrate"
+* Run packagist sync command "php bin/console packagist:sync"
 
 # Screenshots
 ![Search](https://i.imgur.com/JQ7eWmX.png)

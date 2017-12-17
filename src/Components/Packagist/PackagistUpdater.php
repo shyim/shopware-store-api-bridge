@@ -56,6 +56,10 @@ class PackagistUpdater
             $this->fetchPluginsByComposerType($shopwarePluginType, $plugins);
         }
 
+        if (!empty(getenv('CUSTOM_SATIS'))) {
+            $this->fetchPluginsFromSatis(getenv('CUSTOM_SATIS'), $plugins);
+        }
+
         /** @var Plugin $plugin */
         foreach ($plugins as $plugin) {
             $id = $this->connection->fetchColumn('SELECT id FROM plugins WHERE `name` = ?', [$plugin->getInstallName()]);
@@ -134,6 +138,55 @@ class PackagistUpdater
             $plugin->setUrl('https://packagist.org/p/' . $composerPackage);
             $plugin->setRepository($composerPackageBody['repository']);
             $plugin->setVersions($composerPackageBody['versions']);
+
+            $plugins[] = $plugin;
+        }
+    }
+
+    /**
+     * Fetch plugins from custom satis server
+     * @param string $url
+     * @param array $plugins
+     */
+    private function fetchPluginsFromSatis(string $url, array &$plugins)
+    {
+        $list = $this->request($url . '/packages.json');
+        $allPackages = [];
+
+        foreach ($list['includes'] as $subInclude => $sha1) {
+            $include = $this->request($url . '/'. $subInclude);
+            $allPackages += $include['packages'];
+        }
+
+        foreach ($allPackages as $package) {
+            $latestVersion = $this->getLatestVersion($package);
+
+            if ($latestVersion === null) {
+                echo sprintf('Package "%s" has no releases. Skipping!' . "\n", $composerPackage);
+                continue;
+            }
+            // Missing installer-name in composer.json
+            if (empty($latestVersion['extra']['installer-name'])) {
+                echo sprintf('Package "%s" has no installer name. Skipping!' . "\n", $composerPackage);
+                continue;
+            }
+
+            $plugin = new Plugin();
+            $plugin->setName($latestVersion['name']);
+            $plugin->setType($latestVersion['type']);
+            $plugin->setTime($latestVersion['time']);
+            $plugin->setLatestVersion($latestVersion['version']);
+            $plugin->setDescription($latestVersion['description']);
+            $plugin->setDownloads(0);
+            $plugin->setFavers(0);
+            $plugin->setAuthors(empty($latestVersion['authors']) ? [] : array_column($latestVersion['authors'], 'name'));
+            $plugin->setHomepage(empty($latestVersion['homepage']) ? '' : $latestVersion['homepage']);
+            $plugin->setInstallName($latestVersion['extra']['installer-name']);
+            $plugin->setLicense(empty($latestVersion['license']) ? '' : $latestVersion['license']);
+            $plugin->setKeywords(empty($latestVersion['keywords']) ? '' : $latestVersion['keywords']);
+            $plugin->setUrl($url);
+            $plugin->setRepository($latestVersion['source']['url']);
+            $plugin->setVersions($package);
 
             $plugins[] = $plugin;
         }

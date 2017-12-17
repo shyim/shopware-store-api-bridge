@@ -63,7 +63,7 @@ class Plugin implements JsonSerializable
      */
     private $license;
     /**
-     * @var string
+     * @var array
      */
     private $authors;
     /**
@@ -241,7 +241,7 @@ class Plugin implements JsonSerializable
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function getAuthors()
     {
@@ -249,7 +249,7 @@ class Plugin implements JsonSerializable
     }
 
     /**
-     * @param string $authors
+     * @param array $authors
      */
     public function setAuthors($authors)
     {

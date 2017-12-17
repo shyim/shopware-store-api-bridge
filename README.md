@@ -4,14 +4,14 @@
 
 ## What is the goal of this project?
 
-Install and Update composer packages in easiest way directly integrated in the default Plugin Manager, without custom plugins installed on Shop.
-In the first step it would be only possible with packagist, but the plan is also integrate custom satis server to install and update company internal plugins using default shopware plugin manager.
-
+Install and Update composer packaged plugins in integrated Plugin Manager. 
+The composer packages can be also on a self-hosted satis server. Easier update company internal plugins like it were in plugin store.
 
 ## How this works?
 
-This application is between the shopware shop and the shopware store api and adjust the data with the packagist populated data.
-The shopware store api url is changeable in config.php
+This application is between the shopware shop and the shopware store api and adjust the data with the bridge populated data.
+As first step the bridge checkouts all plugins from packagist and optional satis and packages the plugins like in shopware store.
+The shopware store api url is changeable in config.php like so
 
 ```php
 'store' => [
@@ -23,7 +23,7 @@ The shopware store api url is changeable in config.php
 I will create for that a Pull Request, to make it configureable in config.php
 
 ## What is planed?
-* Use plugins from custom Satis server
+* Restrict shop domains to specific plugins
 * Your ideas?
 
 ## Installation
@@ -42,4 +42,4 @@ I will create for that a Pull Request, to make it configureable in config.php
 
 # Screenshots
 ![Search](https://i.imgur.com/JQ7eWmX.png)
-![Listing](https://i.imgur.com/wuJ6Fnu.png)
+![Listing](https://i.imgur.com/oEKH9G6.png)

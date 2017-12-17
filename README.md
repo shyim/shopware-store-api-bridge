@@ -18,7 +18,7 @@ The shopware store api url is changeable in config.php
     'apiEndpoint' => 'http://api.localhost',
 ],
 ```
-[The Response signature has been also to disabled](https://github.com/shopware/shopware/blob/5.3/engine/Shopware/Bundle/PluginInstallerBundle/StoreClient.php#L524) otherwise all requests would be blocked.
+[The response signature must be deactivated manually](https://github.com/shopware/shopware/blob/5.3/engine/Shopware/Bundle/PluginInstallerBundle/StoreClient.php#L524) otherwise all requests would be blocked.
 
 I will create for that a Pull Request, to make it configureable in config.php
 

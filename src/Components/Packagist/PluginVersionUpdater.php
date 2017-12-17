@@ -96,7 +96,7 @@ class PluginVersionUpdater
                     'version' => $name
                 ]);
 
-                // we are currently has zipped the latest version
+                // we are currently on latest version building
                 if ($plugin->getLatestVersion() === $name) {
                     $pluginXmlLocation = $tmpDirVersionPlugin . '/' . $plugin->getInstallName() . '/plugin.xml';
                     if (file_exists($pluginXmlLocation)) {

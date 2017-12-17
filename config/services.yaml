@@ -19,8 +19,3 @@ services:
     App\Controller\:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
-
-    kernel_exception_handler:
-        class: App\Components\GlobalForwarder
-        tags:
-            - "kernel.event_subscriber"

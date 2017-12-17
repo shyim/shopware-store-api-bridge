@@ -22,7 +22,7 @@ The shopware store api url is changeable in config.php
 
 I will create for that a Pull Request, to make it configureable in config.php
 
-## What is planed next time?
+## What is planed?
 * Use plugins from custom Satis server
 * Reading plugin.xml of latest version to provide more plugin informations
 * Your ideas?

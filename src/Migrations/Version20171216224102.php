@@ -14,6 +14,7 @@ class Version20171216224102 extends AbstractMigration
     {
         $this->addSql('CREATE TABLE `plugins` (
   `id` int(11) NOT NULL,
+  `label` varchar(255) NULL,
   `name` varchar(255) NOT NULL,
   `packageName` varchar(255) NOT NULL,
   `latestVersion` varchar(255) NOT NULL,
@@ -26,7 +27,8 @@ class Version20171216224102 extends AbstractMigration
   `license` varchar(50) NOT NULL,
   `keywords` varchar(255) NOT NULL,
   `url` varchar(255) NOT NULL,
-  `repository` varchar(255) NOT NULL
+  `repository` varchar(255) NOT NULL,
+  `changelog` TEXT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;');
 
         $this->addSql('CREATE TABLE `plugins_versions` (

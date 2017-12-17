@@ -37,6 +37,15 @@ class Helper
     }
 
     /**
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    public function resetPlugins()
+    {
+        $this->connection->executeQuery('TRUNCATE plugins');
+        $this->connection->executeQuery('TRUNCATE plugins_versions');
+    }
+
+    /**
      * @param array $array1
      * @param array $array2
      * @param string $column

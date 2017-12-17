@@ -3,6 +3,7 @@
 namespace App\Components\Packagist;
 
 use App\Components\Helper;
+use App\Components\PluginXmlReader;
 use App\Components\ShellScript;
 use Doctrine\DBAL\Connection;
 
@@ -56,7 +57,7 @@ class PluginVersionUpdater
                     $tmpDirVersionPlugin .= '/' . Helper::getNamespace($version['type']);
                 }
 
-                $zipName = $plugin->getInstallName() . '-' . $name . '.zip ';
+                $zipName = $plugin->getInstallName() . '-' . $name . '.zip';
 
                 $script = new ShellScript();
 
@@ -94,6 +95,15 @@ class PluginVersionUpdater
                     'pluginID' => $plugin->getId(),
                     'version' => $name
                 ]);
+
+                // we are currently has zipped the latest version
+                if ($plugin->getLatestVersion() === $name) {
+                    $pluginXmlLocation = $tmpDirVersionPlugin . '/' . $plugin->getInstallName() . '/plugin.xml';
+                    if (file_exists($pluginXmlLocation)) {
+                        $reader = new PluginXmlReader($pluginXmlLocation);
+                        $this->connection->update('plugins', $reader->toArray(), ['id' => $plugin->getId()]);
+                    }
+                }
             }
         }
     }

@@ -8,9 +8,24 @@ services:
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         public: false       # Allows optimizing the container by removing unused services; this also means
 
-    App\Components\:
-        resource: '../src/Components/*'
+    App\Components\StoreListingService:
+        class: App\Components\StoreListingService
+        arguments: ['@Doctrine\DBAL\Driver\Connection']
         public: true
+
+    App\Components\Helper:
+        class: App\Components\Helper
+        arguments: ['@Doctrine\DBAL\Driver\Connection']
+        public: true
+
+    App\Components\Packagist\PluginVersionUpdater:
+        class: App\Components\Packagist\PluginVersionUpdater
+        public: true
+
+    App\Components\Packagist\PackagistUpdater:
+        class: App\Components\Packagist\PackagistUpdater
+        public: true
+        arguments: ['@Doctrine\DBAL\Driver\Connection', '@App\Components\Packagist\PluginVersionUpdater']
 
     App\Commands\:
         resource: '../src/Commands/*'

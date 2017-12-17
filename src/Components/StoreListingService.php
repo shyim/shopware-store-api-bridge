@@ -175,11 +175,11 @@ class StoreListingService
             'pictures' => [],
             'comments' => [],
             'ratingAverage' => 0,
-            'label' => $plugin['name'],
+            'label' => !empty($plugin['label']) ? $plugin['label'] : $plugin['name'],
             'description' => $plugin['description'],
             'installationManual' => null,
             'version' => $plugin['latestVersion'],
-            'changelog' => [],
+            'changelog' => !empty($plugin['changelog']) ? json_decode($plugin['changelog'], true) : [],
             'addons' => [
                 'SW5_integrated'
             ],

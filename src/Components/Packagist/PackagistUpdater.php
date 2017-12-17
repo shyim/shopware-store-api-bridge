@@ -79,7 +79,14 @@ class PackagistUpdater
             if (!empty($id)) {
                 $plugin->setId($id);
                 $this->connection->update('plugins', $updateArray, ['id' => $id]);
+
+                unset($updateArray['name']);
+                unset($updateArray['description']);
+                unset($updateArray['authors']);
+                unset($updateArray['homepage']);
             } else {
+                $updateArray['changelog'] = '';
+
                 $this->connection->insert('plugins', $updateArray);
                 $plugin->setId($this->connection->lastInsertId());
             }

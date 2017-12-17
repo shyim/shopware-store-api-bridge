@@ -82,10 +82,26 @@ class Helper
         $response = curl_exec($curl);
         curl_close($curl);
 
-
-
         file_put_contents($kernel->getLogDir() . '/' . md5($request->getRequestUri()) . '.json', json_encode(json_decode($response, true), JSON_PRETTY_PRINT));
 
         return json_decode($response, true);
+    }
+
+    /**
+     * @param string $name
+     * @return null|string
+     */
+    public static function getNamespace(string $name)
+    {
+        switch ($name) {
+            case 'shopware-plugin':
+                return null;
+            case 'shopware-backend-plugin':
+                return 'Backend';
+            case 'shopware-core-plugin':
+                return 'Core';
+            case 'shopware-frontend-plugin':
+                return 'Frontend';
+        }
     }
 }

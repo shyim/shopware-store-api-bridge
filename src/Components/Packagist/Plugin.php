@@ -383,7 +383,7 @@ class Plugin implements JsonSerializable
                return 'Core';
            case 'shopware-frontend-plugin':
                return 'Frontend';
-       }
+        }
 
         throw new \Exception(sprintf(sprintf('Invalid plugin type, got "%s"', $this->type)));
     }

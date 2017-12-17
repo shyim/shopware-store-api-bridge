@@ -2,6 +2,7 @@
 
 namespace App\Components\Packagist;
 
+use App\Components\Helper;
 use App\Components\ShellScript;
 use Doctrine\DBAL\Connection;
 
@@ -51,8 +52,8 @@ class PluginVersionUpdater
                 $tmpDirVersion = $tmpDir . '/' . uniqid();
                 $tmpDirVersionPlugin = $tmpDirVersion;
 
-                if ($plugin->getType() !== 'shopware-plugin') {
-                    $tmpDirVersionPlugin .= '/' . $plugin->getNamespace();
+                if ($version['type'] !== 'shopware-plugin') {
+                    $tmpDirVersionPlugin .= '/' . Helper::getNamespace($version['type']);
                 }
 
                 $zipName = $plugin->getInstallName() . '-' . $name . '.zip ';

@@ -86,8 +86,6 @@ class PackagistUpdater
 
             $this->versionUpdater->updateVersions($plugin);
         }
-
-        die();
     }
 
     private function fetchPluginsByComposerType($composerType, &$plugins)

@@ -2,6 +2,7 @@
 
 namespace App\Components\Packagist;
 
+use App\Components\ShellScript;
 use Doctrine\DBAL\Connection;
 
 /**
@@ -55,14 +56,38 @@ class PluginVersionUpdater
                 }
 
                 $zipName = $plugin->getInstallName() . '-' . $name . '.zip ';
-                system('mkdir -p ' . $tmpDirVersionPlugin . ' && cd ' . $tmpDirVersionPlugin . ' && git clone --branch ' . $name . ' '  . $version['source']['url'] . ' ' . $plugin->getInstallName());
 
-                // plugin has custom requires
+                $script = new ShellScript();
+
+                $script
+                    ->addScript('mkdir -p :tmpPluginVersionDir')
+                    ->addScript('cd :tmpPluginVersionDir')
+                    ->addScript('git clone --branch :tag :gitUrl :pluginName');
+
                 if (isset($version['require']) && count($version['require']) > 1) {
-                    system('cd ' . $tmpDirVersionPlugin . '/' . $plugin->getInstallName() . ' && composer install -o --no-dev');
+                    $script
+                        ->addScript('cd :pluginName')
+                        ->addScript('composer install -o --no-dev');
                 }
 
-                system('cd ' . $tmpDirVersion . ' && zip -r ' . $zipName . ' * -x *.git* && mv ' . $zipName . ' ' . $pluginStorageFolder);
+                $script
+                    ->addScript('cd :tmpDirVersion')
+                    ->addScript('zip -r :zipName * -x *.git*')
+                    ->addScript('mv :zipName :storageDir');
+
+                $script
+                    ->setParameters([
+                        'tmpPluginVersionDir' => $tmpDirVersionPlugin,
+                        'tag' => $name,
+                        'gitUrl' => $version['source']['url'],
+                        'pluginName' => $plugin->getInstallName(),
+                        'tmpDirVersion' => $tmpDirVersion,
+                        'zipName' => $zipName,
+                        'storageDir' => $pluginStorageFolder
+                    ]);
+
+
+                $script->runScript();
 
                 $this->connection->insert('plugins_versions', [
                     'pluginID' => $plugin->getId(),

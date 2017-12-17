@@ -39,18 +39,16 @@ class Version20171216224102 extends AbstractMigration
 
 
         $this->addSql('ALTER TABLE `plugins`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `name` (`name`);
+  ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `plugins_versions`
   ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `plugins`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `plugins_versions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=300;
-COMMIT;');
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;');
     }
 
     public function down(Schema $schema)

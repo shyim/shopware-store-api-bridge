@@ -1,4 +1,4 @@
-# Bridge between Shopware Store API and our Shopware Shop
+# Bridge between Shopware Store API and your Shopware Shop
 
 ## This project is experimental
 
@@ -20,7 +20,7 @@ The shopware store api url is changeable in config.php like so
 ```
 [The response signature must be deactivated manually](https://github.com/shopware/shopware/blob/5.3/engine/Shopware/Bundle/PluginInstallerBundle/StoreClient.php#L524) otherwise all requests would be blocked.
 
-I will create for that a Pull Request, to make it configureable in config.php
+I will create for that a Pull Request, to make it configureable in config.php or custom a custom certificate.
 
 ## What is planed?
 * Restrict shop domains to specific plugins

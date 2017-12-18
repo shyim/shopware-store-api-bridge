@@ -18,9 +18,8 @@ The shopware store api url is changeable in config.php like so
     'apiEndpoint' => 'http://api.localhost',
 ],
 ```
-[The response signature must be deactivated manually](https://github.com/shopware/shopware/blob/5.3/engine/Shopware/Bundle/PluginInstallerBundle/StoreClient.php#L524) otherwise all requests would be blocked.
 
-I will create for that a Pull Request, to make it configureable in config.php or custom a custom certificate.
+Custom generated BridgeCert plugin must be before installed (It will be generated with php bin/console key:generate)
 
 ## What is planed?
 * Restrict shop domains to specific plugins
@@ -39,6 +38,7 @@ I will create for that a Pull Request, to make it configureable in config.php or
 * Copy .env_default to .env and adjust the settings
 * Run migrations "php bin/console doctrine:migrations:migrate"
 * Run packagist sync command "php bin/console packagist:sync"
+* Generate public and private key for shopware signature "php bin/console generate:key"
 
 # Screenshots
 ![Search](https://i.imgur.com/JQ7eWmX.png)

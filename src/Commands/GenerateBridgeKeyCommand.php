@@ -2,6 +2,7 @@
 
 namespace App\Commands;
 
+use App\Components\ShellScript;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -43,5 +44,15 @@ class GenerateBridgeKeyCommand extends Command
 
         $io = new SymfonyStyle($input, $output);
         $io->success('Generated custom bridge certificates');
+
+        $script = new ShellScript();
+        $script
+            ->addScript('cp bridge.public swPlugin/BridgeCert')
+            ->addScript('cd swPlugin')
+            ->addScript('zip -r BridgeCert.zip BridgeCert')
+            ->addScript('mv BridgeCert.zip ..')
+            ->runScript();
+
+        $io->success('Generated bundled shopware plugin for certificate in root folder "BridgeCert.zip"');
     }
 }

@@ -7,3 +7,4 @@ vendor
 /var/cache/*
 /var/log/*
 bridge.*
+BridgeCert.zip

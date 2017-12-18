@@ -90,7 +90,7 @@ class PluginStoreController extends Controller
 
         if (isset($filter['search'])) {
             $brigeData = $this->get(StoreListingService::class)->getListing($filter, $request->query->get('offset', 0), $request->query->get('limit', 20));
-            $response['data'] = Helper::mergeArray($response['data'], $brigeData['data'], 'name');
+            $response['data'] = Helper::mergeArray($brigeData['data'], $response['data'], 'name');
         }
 
         return new JsonResponse($response);
@@ -135,8 +135,8 @@ class PluginStoreController extends Controller
             $response['data'] = [];
         }
 
-        // merge store updates and bridge updates, and prefer store updates
-        $response['data'] = Helper::mergeArray($response['data'], $updates, 'name');
+        // merge store updates and bridge updates, and prefer bridge updates
+        $response['data'] = Helper::mergeArray($updates, $response['data'], 'name');
 
         if (count($updates) >= 1) {
             // Remove shopware api error code, if the bridge has updates

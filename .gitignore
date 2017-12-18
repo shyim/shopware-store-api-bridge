@@ -6,3 +6,4 @@ vendor
 .env
 /var/cache/*
 /var/log/*
+bridge.*

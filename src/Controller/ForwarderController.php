@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Components\Helper;
+use App\Components\SignatureResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,10 +17,10 @@ class ForwarderController extends Controller
 {
     /**
      * @param Request $request
-     * @return JsonResponse
+     * @return SignatureResponse
      */
     public function proxy(Request $request)
     {
-        return new JsonResponse(Helper::proxy($request));
+        return new SignatureResponse(Helper::proxy($request));
     }
 }

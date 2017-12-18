@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Components\Helper;
+use App\Components\SignatureResponse;
 use App\Components\StoreListingService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -37,7 +38,7 @@ class PluginStoreController extends Controller
     /**
      * @Route(path="/pluginStore/categories")
      * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @return SignatureResponse
      */
     public function handleCustomCategories(Request $request)
     {
@@ -63,13 +64,13 @@ class PluginStoreController extends Controller
             ];
         }
 
-        return new JsonResponse($response);
+        return new SignatureResponse($response);
     }
 
     /**
      * @Route(path="/pluginStore/plugins")
      * @param Request $request
-     * @return JsonResponse
+     * @return SignatureResponse
      */
     public function handleCustomCategoryListing(Request $request)
     {
@@ -93,14 +94,14 @@ class PluginStoreController extends Controller
             $response['data'] = Helper::mergeArray($brigeData['data'], $response['data'], 'name');
         }
 
-        return new JsonResponse($response);
+        return new SignatureResponse($response);
     }
 
     /**
      * @Route(path="/pluginFiles/{name}/data")
      * @param Request $request
      * @param string $name
-     * @return JsonResponse
+     * @return SignatureResponse
      */
     public function handleCustomPluginDownload(Request $request, string $name)
     {
@@ -109,7 +110,7 @@ class PluginStoreController extends Controller
             $path = '/storage/' . $name . '/' . $name . '-' . $pluginData['latestVersion'] . '.zip';
             $sPath = dirname($this->get('kernel')->getRootDir()) . $path;
 
-            return new JsonResponse([
+            return new SignatureResponse([
                 'location' => $baseUrl . $path,
                 'size' => filesize($sPath),
                 'sha1' => sha1_file($sPath),
@@ -117,14 +118,14 @@ class PluginStoreController extends Controller
                 'encrypted' => false,
             ]);
         } else {
-            return new JsonResponse(Helper::proxy($request));
+            return new SignatureResponse(Helper::proxy($request));
         }
     }
 
     /**
      * @Route(path="/pluginStore/updateablePlugins")
      * @param Request $request
-     * @return JsonResponse
+     * @return SignatureResponse
      */
     public function handlePluginUpdates(Request $request)
     {
@@ -144,6 +145,6 @@ class PluginStoreController extends Controller
             $response['success'] = true;
         }
 
-        return new JsonResponse($response);
+        return new SignatureResponse($response);
     }
 }

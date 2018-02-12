@@ -74,8 +74,8 @@ class PackagistUpdater
                 'favers' => $plugin->getFavers(),
                 'authors' => implode(',', $plugin->getAuthors()),
                 'homepage' => $plugin->getHomepage(),
-                'license' => implode(' ', $plugin->getLicense()),
-                'keywords' => implode(',', $plugin->getKeywords()),
+                'license' => implode(' ', $plugin->getLicense() ? : []),
+                'keywords' => implode(',', $plugin->getKeywords() ? : []),
                 'url' => $plugin->getUrl(),
                 'repository' => $plugin->getRepository(),
             ];

@@ -160,14 +160,15 @@ class PackagistUpdater
 
         foreach ($allPackages as $package) {
             $latestVersion = $this->getLatestVersion($package);
+            $firstVersion = current($package);
 
             if ($latestVersion === null) {
-                echo sprintf('Package "%s" has no releases. Skipping!' . "\n", $composerPackage);
+                echo sprintf('Package "%s" has no releases. Skipping!' . "\n", $firstVersion['name']);
                 continue;
             }
             // Missing installer-name in composer.json
             if (empty($latestVersion['extra']['installer-name'])) {
-                echo sprintf('Package "%s" has no installer name. Skipping!' . "\n", $composerPackage);
+                echo sprintf('Package "%s" has no installer name. Skipping!' . "\n", $firstVersion['name']);
                 continue;
             }
 

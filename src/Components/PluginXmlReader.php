@@ -29,7 +29,7 @@ class PluginXmlReader
     public function toArray()
     {
         $returnData =  [
-            'label' => $this->data['label'][0],
+            'label' => is_string($this->data['label']) ? $this->data['label'] : $this->data['label'][0],
         ];
 
         if (!empty($this->data['author'])) {
